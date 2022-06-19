@@ -160,7 +160,6 @@ class ScheduledExams : AppCompatActivity() {
                             Text(text = "Upcoming Exams", style = TextStyle(fontSize = 21.sp, fontWeight = FontWeight.Bold), modifier = Modifier.padding(15.dp))
                             LazyVerticalGrid(onProgressList = upComingList)
                         }
-
 //                        LazyColumn()
 //                        {
 //                            items(examsScheduled.quizList.value)
