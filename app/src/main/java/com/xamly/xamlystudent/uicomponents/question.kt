@@ -20,23 +20,38 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun question(option: String,color: Color,returnChoice:(String)->Unit) {
 
-    var showDialog = remember{
+    var buttonClick = remember {
         mutableStateOf(false)
     }
 
-    if(showDialog.value)
-        optionSelectDialog(showDialog)
 
-
-    Surface(modifier = Modifier
+    if(!buttonClick.value)
+    {
+        Surface(modifier = Modifier
         .padding(15.dp)
         .fillMaxWidth()
         .clickable() {
+            buttonClick.value=!buttonClick.value
             returnChoice(option)
         }
         .height(45.dp), color = color, shape = RoundedCornerShape(10.dp)) {
         Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             Text(text = option, style = TextStyle(color = Color.Black, fontSize = 21.sp))
+        }
+    }}
+    else
+    {
+        Surface(modifier = Modifier
+            .padding(15.dp)
+            .fillMaxWidth()
+            .clickable() {
+                buttonClick.value=!buttonClick.value
+                returnChoice(option)
+            }
+            .height(45.dp), color = Color(51, 194, 41, 255), shape = RoundedCornerShape(10.dp)) {
+            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                Text(text = option, style = TextStyle(color = Color.Black, fontSize = 21.sp))
+            }
         }
     }
 

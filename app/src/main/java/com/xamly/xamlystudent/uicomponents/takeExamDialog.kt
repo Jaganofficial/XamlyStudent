@@ -54,7 +54,7 @@ private fun CustomDialogUI(modifier: Modifier = Modifier, openDialogCustom: Muta
 
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Important! You are about to take the test...",
+                    text = "You are about to take the test",
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(top = 5.dp)
@@ -62,8 +62,8 @@ private fun CustomDialogUI(modifier: Modifier = Modifier, openDialogCustom: Muta
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis, fontSize = 21.sp
                 )
-                Text(
-                    text = "All the Best! and Please note that you can take this exam only once!",
+                Text(fontSize = 19.sp, color = Color.Gray,
+                    text = "Please note that you can take this exam only once! All The Best",
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(top = 10.dp, start = 25.dp, end = 25.dp)
@@ -75,7 +75,7 @@ private fun CustomDialogUI(modifier: Modifier = Modifier, openDialogCustom: Muta
                 Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp)
-                    .background(Color(68,110,6)),
+                    .background(Color(231,255,174)),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
 
@@ -84,8 +84,8 @@ private fun CustomDialogUI(modifier: Modifier = Modifier, openDialogCustom: Muta
                 }) {
 
                     Text(
-                        "Clear",
-                        color = Color.White,
+                        "Close",
+                        color = Color.Black,
                         modifier = Modifier.padding(top = 5.dp, bottom = 5.dp), fontSize = 19.sp
                     )
                 }
@@ -95,8 +95,8 @@ private fun CustomDialogUI(modifier: Modifier = Modifier, openDialogCustom: Muta
                     openDialogCustom.value = false
                 }) {
                     Text(
-                        "Take Test",
-                        color = Color.White,
+                        "Let's Go!",
+                        color = Color(22, 35, 72, 255),
                         modifier =modifier.padding(top = 5.dp, bottom = 5.dp), fontSize = 19.sp
                     )
                 }

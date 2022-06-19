@@ -19,7 +19,13 @@ import com.xamly.xamlystudent.R
 import kotlin.random.Random
 
 @Composable
-fun showResult(question: Questions, position: Int, returnChoice: (String, Int) -> Unit) {
+fun showResult(
+    question: Questions,
+    position: Int,
+    answerMap: MutableMap<String, String>,
+    positionmap: MutableMap<String, String>,
+    count: Int
+) {
 
     Column(modifier = Modifier
         .fillMaxSize()) {
@@ -27,7 +33,7 @@ fun showResult(question: Questions, position: Int, returnChoice: (String, Int) -
         Row(modifier = Modifier.fillMaxWidth()) {
 
             Text(
-                text = "$position/15",
+                text = "$position/$count",
                 style = TextStyle(
                     color = Color.White,
                     fontWeight = FontWeight.ExtraBold,
@@ -42,7 +48,7 @@ fun showResult(question: Questions, position: Int, returnChoice: (String, Int) -
             Text(text = question.questionTitle, style = TextStyle(color= Color.White, fontSize = 24.sp))
 
 
-            displayImage(painter = painterResource(id = R.drawable.image1))
+            displayImage(painter = painterResource(id = R.drawable.image1),question.questionId)
 
             val x = remember {
                 mutableStateOf(Random.nextInt(170, 255))
@@ -54,22 +60,61 @@ fun showResult(question: Questions, position: Int, returnChoice: (String, Int) -
                 mutableStateOf(Random.nextInt(170, 255))
             }
 
+            var isCorrect :Boolean?
+
+
             Column {
+                if(answerMap[question.questionId].equals("0"))
+                {
+                    isCorrect=true
+                }
+                else if(positionmap.get(question.questionId).equals("0"))
+                {
+                    isCorrect=false
+                }
+                else{
+                    isCorrect=null
+                }
+                questionResult(option = question.op1, color = Color(x.value,y.value,z.value), isCorrect = isCorrect)
 
-                question(option = question.op1, color = Color(x.value,y.value,z.value)) {
-                    returnChoice(it,1)
+                if(answerMap[question.questionId].equals("1"))
+                {
+                    isCorrect=true
                 }
-                question(option = question.op2, color = Color(x.value,y.value,z.value)) {
-                    returnChoice(it,2)
+                else if(positionmap.get(question.questionId).equals("1"))
+                {
+                    isCorrect=false
                 }
-                question(option = question.op3, color = Color(x.value,y.value,z.value)) {
-                    returnChoice(it,3)
+                else{
+                    isCorrect=null
                 }
-                question(option = question.op4, color = Color(x.value,y.value,z.value)) {
-                    returnChoice(it,4)
-                }
+                questionResult(option = question.op2, color = Color(x.value,y.value,z.value), isCorrect = isCorrect)
 
+                if(answerMap[question.questionId].equals("2"))
+                {
+                    isCorrect=true
+                }
+                else if(positionmap.get(question.questionId).equals("2"))
+                {
+                    isCorrect=false
+                }
+                else{
+                    isCorrect=null
+                }
+                questionResult(option = question.op3, color = Color(x.value,y.value,z.value), isCorrect = isCorrect)
 
+                if(answerMap[question.questionId].equals("3"))
+                {
+                    isCorrect=true
+                }
+                else if(positionmap.get(question.questionId).equals("3"))
+                {
+                    isCorrect=false
+                }
+                else{
+                    isCorrect=null
+                }
+                questionResult(option = question.op4, color = Color(x.value,y.value,z.value), isCorrect = isCorrect)
 
                 Spacer(modifier = Modifier.height(25.dp))
 

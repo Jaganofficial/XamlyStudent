@@ -16,15 +16,16 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -45,6 +46,7 @@ class ExamScreen : AppCompatActivity() {
         var questionId= intent.getStringExtra("QuesionID")
 
         val answerMap = mutableMapOf<String , String>()
+        val positionMap = mutableMapOf<String , String>()
 
 
 
@@ -57,13 +59,17 @@ class ExamScreen : AppCompatActivity() {
                 mutableStateOf(false)
             }
 
+            val showQuestions = remember {
+                mutableStateOf(true)
+            }
+
             Surface(color = Color(1, 46, 81)) {
                 Box(contentAlignment = Alignment.TopCenter) {
 
                     if(questionList.value.isNullOrEmpty())
                     {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(text = "No data available! Please wait...",style= TextStyle(color=Color.White))
+                            Text(text = "Loading! Please wait...",style= TextStyle(color=Color.White))
                         }
                     }
                     else {
@@ -71,39 +77,61 @@ class ExamScreen : AppCompatActivity() {
                         {
                             items(questionList.value)
                             {
-                                showQuestion(it,questionList.value.indexOf(it)+1) {ans, no->
-                                    if((""+no).equals("${it.ans}"))
-                                    {
-                                        Log.d("VALUE2",""+no+" correct "+it.ans)
-                                        answerMap.put(it.questionId,"C")
-                                    }
-                                    else{
-                                        Log.d("VALUE2",""+no+" try again "+it.ans)
-                                        answerMap.put(it.questionId,"C")
+                                if(showQuestions.value) {
+                                    showQuestion(
+                                        it,
+                                        questionList.value.indexOf(it) + 1, count = questionList.value.size
+                                    ) { ans, no ->
+                                        if (("" + no).equals("${it.ans}")) {
+                                            Log.d("VALUE2", "" + no + " correct " + it.ans)
+                                            answerMap.put(it.questionId, "$no")
+                                            positionMap.put(it.questionId,"")
+                                        } else {
+                                            Log.d("VALUE2", "" + no + " try again " + it.ans)
+                                            answerMap.put(it.questionId, "")
+                                            positionMap.put(it.questionId,"$no")
+                                        }
                                     }
                                 }
                             }
                         }
-                        showTimer()
 
+                        if(!showResult.value)
+                        {
+                            showTimer()
                         Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Center){
-                            Button(onClick = {
+                            Button(shape = RoundedCornerShape(topStart = 14.dp,topEnd = 14.dp), modifier = Modifier
+                                .width(150.dp), colors = ButtonDefaults.buttonColors(backgroundColor = Color.White), onClick = {
                                 Log.d("VALUE2",answerMap.toString())
                                 showResult.value=true
+                                showQuestions.value=false
                             }) {
-                                Text(text = "Submit Test")
+                                Text(text = "Submit", style = TextStyle(Color(13, 31, 96, 255), fontSize = 21.sp))
                             }
                         }
-
+                        }
                     }
                 }
             }
 
             if(showResult.value)
             {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color(4, 8, 65, 255))) {
+                    LazyColumn()
+                    {
+                        items(questionList.value)
+                        {
+                            com.xamly.xamlystudent.uicomponents.showResult(
+                                question = it,answerMap=answerMap,positionmap=positionMap,
+                                position = questionList.value.indexOf(it)+1,count=questionList.value.size
+                            )
+                        }
+                    }
+                }
 
             }
-
         }
     }
 
@@ -133,7 +161,6 @@ class ExamScreen : AppCompatActivity() {
                         }
                     }
                     questionList.value = mutableList.toList()
-
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
@@ -147,22 +174,16 @@ class ExamScreen : AppCompatActivity() {
     fun showTimer(){
         Surface(
             color = Color.Transparent
-
         ) {
             Surface(shape = RoundedCornerShape(bottomStart =  14.dp, bottomEnd = 14.dp), color = Color.Transparent) {
                 Box(
-                    contentAlignment = Alignment.Center, modifier = Modifier.background(Brush.verticalGradient(
-                        listOf(
-                            Color(118, 213, 118, 255),
-                            Color.Transparent
-                        )
-                    ))
+                    contentAlignment = Alignment.Center, modifier = Modifier.background(color = Color.White)
                 ) {
                     Timer(
-                        totalTime = 10L * 1000L,
+                        totalTime = 200L * 1000L,
                         modifier = Modifier
-                            .height(45.dp)
-                            .width(200.dp)
+                            .height(35.dp)
+                            .width(150.dp)
                     )
                 }
             }
@@ -205,13 +226,18 @@ class ExamScreen : AppCompatActivity() {
                     size.value = it
                 }
         ) {
+
             if(currentTime>0) {
-                Text(
-                    text = (currentTime / 1000L).toString(),
-                    fontSize = 21.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Row(horizontalArrangement =Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painter = painterResource(id = com.xamly.xamlystudent.R.drawable.duration), contentDescription ="Timer", modifier = Modifier.size(40.dp) )
+                    Text(
+                        text = (currentTime / 1000L).toString(),
+                        fontSize = 21.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(5, 135, 160, 255)
+                    )
+                }
+
             }
             else{
                 Text(
@@ -224,7 +250,8 @@ class ExamScreen : AppCompatActivity() {
 
             if(currentTime<=0)
             {
-                Toast.makeText(this@ExamScreen,"Done", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@ExamScreen,"The time is up! Your response will be auto submitted", Toast.LENGTH_LONG).show()
+                finish()
             }
 
         }
